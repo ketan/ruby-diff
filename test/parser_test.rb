@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'pp'
 
 module RubyDiff
   class ParserTest < Test::Unit::TestCase

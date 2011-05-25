@@ -1,5 +1,6 @@
 require 'test/unit'
 require 'ruby_diff'
+require 'pp'
 
 module UnitTestHelper
   def fixture(file)
