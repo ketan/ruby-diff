@@ -1,9 +1,27 @@
 module RubyDiff
+  HUNK_LINE_REGEX = /^@@ [+-]([0-9]+)(?:,([0-9]+))? [+-]([0-9]+)(?:,([0-9]+))? @@/
+  
   class Line < String
     def initialize(line)
       super(line)
     end
-  
+    
+    def self.hunk_line(line)
+      return HunkLine.new(line)               if line =~ HUNK_LINE_REGEX
+    end
+    
+    def self.diff_line(line)
+      return AddLine.new(line[1..-1])             if line =~ /\+/
+      return RemoveLine.new(line[1..-1])          if line =~ /\-/
+      return Line.new(line[1..-1])                if line =~ / /
+    end
+    
+    def self.header_line(line)
+      return LeftFileLine.new(line)           if line =~ /^--- /
+      return RightFileLine.new(line)          if line =~ /^\+\+\+ /
+      return IndexLine.new(line)              if line =~ /^index \w+\.\.\w+( [0-9]+)?$/i
+    end
+    
     def self.header(line); HeaderLine.new(line) end
   end
 
@@ -13,8 +31,9 @@ module RubyDiff
   class IndexLine < Line; end
   class LeftFileLine < Line; end
   class RightFileLine < Line; end
+  class UnchangedLine < Line; end
+  
   class HunkLine < Line
-    HUNK_LINE_REGEX = /^@@ [+-]([0-9]+)(?:,([0-9]+))? [+-]([0-9]+)(?:,([0-9]+))? @@/
     
     attr_reader :left_offset
     attr_reader :right_offset

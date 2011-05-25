@@ -1,6 +1,5 @@
 module RubyDiff
   class Parser
-    HUNK_LINE_REGEX = /^@@ [+-]([0-9]+)(?:,([0-9]+))? [+-]([0-9]+)(?:,([0-9]+))? @@/
     def self.parse(diff_text)
       parser = Parser.new
       
@@ -25,25 +24,24 @@ module RubyDiff
         return
       end
       
-      if header = header_line(line)
+      if header = Line.header_line(line)
         @data.last << header
         return
       end
       
-      if hunk = hunk_line(line)
+      if hunk = Line.hunk_line(line)
         @data << Block.hunk
         @data.last << hunk
         return
       end
       
-      @data.last << diff_line(line)
+      @data.last << Line.diff_line(line)
       
     end
     
     def finish
     end
     
-    protected
     def current_block
       @data.last
     end
@@ -52,21 +50,7 @@ module RubyDiff
       return true if line =~ /^diff \-\-git/
     end
 
-    def hunk_line(line)
-      return HunkLine.new(line)               if line =~ HUNK_LINE_REGEX
-    end
-    
-    def diff_line(line)
-      return AddLine.new(line[1..-1])             if line =~ /\+/
-      return RemoveLine.new(line[1..-1])          if line =~ /\-/
-      return Line.new(line[1..-1])                if line =~ / /
-    end
-    
-    def header_line(line)
-      return LeftFileLine.new(line)           if line =~ /^--- /
-      return RightFileLine.new(line)          if line =~ /^\+\+\+ /
-      return IndexLine.new(line)              if line =~ /^index \w+\.\.\w+( [0-9]+)?$/i
-    end
+
   end
   
   
