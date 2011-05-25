@@ -1,0 +1,12 @@
+diff --git a/test/parser_test.rb b/test/parser_test.rb
+index 226c615..1c1c09d 100644
+--- a/test/parser_test.rb
++++ b/test/parser_test.rb
+@@ -3,6 +3,7 @@ require 'test_helper'
+ module RubyDiff
+   class ParserTest < Test::Unit::TestCase
+     def test_parse_a_single_line_addition
++      #here's an addition
+       
+     end
+   end
