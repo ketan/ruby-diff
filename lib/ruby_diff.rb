@@ -1,2 +1,5 @@
 require 'ruby_diff/version'
+require 'ruby_diff/line'
+require 'ruby_diff/block'
+require 'ruby_diff/file'
 require 'ruby_diff/parser'

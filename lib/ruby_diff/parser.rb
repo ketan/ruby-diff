@@ -1,6 +1,6 @@
 module RubyDiff
   class Parser
-
+    HUNK_LINE_REGEX = /^@@ [+-]([0-9]+)(?:,([0-9]+))? [+-]([0-9]+)(?:,([0-9]+))? @@/
     def self.parse(diff_text)
       parser = Parser.new
       
@@ -29,6 +29,15 @@ module RubyDiff
         @data.last << header
         return
       end
+      
+      if hunk = hunk_line(line)
+        @data << Block.hunk
+        @data.last << hunk
+        return
+      end
+      
+      @data.last << diff_line(line)
+      
     end
     
     def finish
@@ -43,6 +52,16 @@ module RubyDiff
       return true if line =~ /^diff \-\-git/
     end
 
+    def hunk_line(line)
+      return HunkLine.new(line)               if line =~ HUNK_LINE_REGEX
+    end
+    
+    def diff_line(line)
+      return AddLine.new(line[1..-1])             if line =~ /\+/
+      return RemoveLine.new(line[1..-1])          if line =~ /\-/
+      return Line.new(line[1..-1])                if line =~ / /
+    end
+    
     def header_line(line)
       return LeftFileLine.new(line)           if line =~ /^--- /
       return RightFileLine.new(line)          if line =~ /^\+\+\+ /
@@ -50,37 +69,6 @@ module RubyDiff
     end
   end
   
-  class Line < String
-    def initialize(line)
-      super(line)
-    end
-    
-    def self.header(line); HeaderLine.new(line) end
-  end
-  
-  class HeaderLine < Line; end
-  class IndexLine < Line; end
-  class LeftFileLine < Line; end
-  class RightFileLine < Line; end
-  
-
-  class Block < Array
-    def self.header; HeaderBlock.new end
-  end
-  
-  class HeaderBlock < Block
-    def left_file_name
-      return @left_file_name if @left_file_name
-      self.find { |line| @left_file_name = line.gsub(/^--- /, '') if LeftFileLine === line }
-      @left_file_name
-    end
-    
-    def right_file_name
-      return @right_file_name if @right_file_name
-      self.find { |line| @right_file_name = line.gsub(/^\+\+\+ /, '') if RightFileLine === line }
-      @right_file_name
-    end
-  end
   
   # contains a list of files
   class Data < Array
@@ -90,21 +78,13 @@ module RubyDiff
         if HeaderBlock === block
           result << File.new(block)
         end
+        if HunkBlock === block
+          result.last << block
+        end
       end
       result
     end
     
   end
-  
-  class File
-    attr_reader :left_file_name
-    attr_reader :right_file_name
-    
-    def initialize(header_block)
-      @header_block = header_block
-      @left_file_name = header_block.left_file_name
-      @right_file_name = header_block.right_file_name
-    end
-  end
-  
+
 end
