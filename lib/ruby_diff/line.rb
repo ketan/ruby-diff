@@ -11,9 +11,9 @@ module RubyDiff
     end
     
     def self.diff_line(line)
-      return AddLine.new(line[1..-1])             if line =~ /\+/
-      return RemoveLine.new(line[1..-1])          if line =~ /\-/
-      return UnchangedLine.new(line[1..-1])       if line =~ / /
+      return AddLine.new(line[1..-1])             if line =~ /^\+/
+      return RemoveLine.new(line[1..-1])          if line =~ /^\-/
+      return UnchangedLine.new(line[1..-1])       if line =~ /^ /
     end
     
     def self.header_line(line)
@@ -23,15 +23,30 @@ module RubyDiff
     end
     
     def self.header(line); HeaderLine.new(line) end
+    
+    def inspect
+      foo = (RightFileLine.name.size - self.class.name.size)
+      "#<#{self.class} #{" " * foo }:#{self.prefix}#{self}>"
+    end
+    
+    def prefix
+      ''
+    end
   end
-
-  class AddLine < Line; end
-  class RemoveLine < Line; end
+  
+  class AddLine < Line
+    def prefix; '+' end
+  end
+  class RemoveLine < Line
+    def prefix; '-' end
+  end
+  class UnchangedLine < Line
+    def prefix; ' ' end
+  end
   class HeaderLine < Line; end
   class IndexLine < Line; end
   class LeftFileLine < Line; end
   class RightFileLine < Line; end
-  class UnchangedLine < Line; end
   
   class HunkLine < Line
     
