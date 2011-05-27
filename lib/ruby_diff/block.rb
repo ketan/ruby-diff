@@ -4,8 +4,36 @@ module RubyDiff
     def self.hunk; HunkBlock.new end
   end
 
+  class ChangedBlock < Block; end
+  
   class HunkBlock < Block
+    
+    def <<(line)
+      return super(line) if HunkLine === line
+      return super(line) if UnchangedLine === line
+      
+      if RemoveLine === self.last && AddLine === line
+        last_removed_lines = self.reverse.take_while do |my_line|
+          RemoveLine === my_line
+        end.reverse
+        
+        changed_block = ChangedBlock.new
+        changed_block.push *last_removed_lines
+        changed_block << line
+        self.slice!((self.size - last_removed_lines.size)..-1)
+        super(changed_block)
+        return
+      end
 
+      if ChangedBlock === self.last
+        return self.last << line if RemoveLine === line
+        return self.last << line if AddLine === line
+      end
+      
+      return super(line) if AddLine === line
+      return super(line) if RemoveLine === line
+    end
+    
     def left_offset; self.first.left_offset; end
     def right_offset; self.first.right_offset end
     def left_line_count; self.first.left_line_count end

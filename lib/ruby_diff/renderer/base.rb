@@ -6,7 +6,13 @@ module RubyDiff
       
         diff_data.each do |block|
           result << send("before_#{classify(block)}", block)
-          result << block.collect { |line| send(classify(line), line) }
+          result << block.collect do |line|
+                      if ChangedBlock === line
+                        do_changedblock(line)
+                      else
+                        send(classify(line), line)
+                      end
+                    end
           result << send("after_#{classify(block)}", block)
         end
       
@@ -38,10 +44,25 @@ module RubyDiff
       end
       # --- end headers ---
       
-      
       # --- begin hunks ---
+      
+      def do_changedblock(block)
+        result = []
+        result << begin_changedblock(block)
+        result << block.collect do |line|
+                    send(classify(line), line)
+                  end
+        result << end_changedblock(block)
+        result.compact
+      end
+      
+      def begin_changedblock(block)
+      end
+      
+      def end_changedblock(block)
+      end
+      
       def before_hunkblock(block)
-        
       end
       
       def hunkline(line)
