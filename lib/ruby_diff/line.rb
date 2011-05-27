@@ -58,9 +58,9 @@ module RubyDiff
     def initialize(str)
       super(str)
       str =~ HUNK_LINE_REGEX
-      @left_offset = $1.to_i
+      @left_offset = $1.to_i - 1
       @left_line_count = $2.to_i
-      @right_offset = $3.to_i
+      @right_offset = $3.to_i - 1
       @right_line_count = $4.to_i
     end
   end

@@ -68,8 +68,10 @@ module RubyDiff
     
     def test_a_hunk_block_should_identify_changed_blocks
       hunk = Block.hunk
+      hunk << Line.hunk_line('we need a hunk line, but it does not matter here :)')
       hunk << Line.diff_line("-this line was removed")
       hunk << Line.diff_line("-another line was removed")
+      hunk << Line.diff_line("-here is another another line that was removed")
       hunk << Line.diff_line("+this line was added")
       hunk << Line.diff_line("+this was another line added")
       
@@ -82,7 +84,7 @@ module RubyDiff
       hunk << Line.diff_line("+this was another line added")
       
       assert_equal [ChangedBlock, UnchangedLine, UnchangedLine, ChangedBlock], hunk.collect(&:class)
-      assert_equal 4, hunk.first.size
+      assert_equal 5, hunk.first.size
       assert_equal 4, hunk.last.size
     end
   end

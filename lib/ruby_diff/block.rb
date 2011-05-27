@@ -22,7 +22,7 @@ module RubyDiff
       hunk_line = self.first
       @left_lines = []
       @right_lines = []
-      self[1..-1].each do |line|
+      lines.each do |line|
         @left_lines << line  if (UnchangedLine === line) || (RemoveLine === line)
         @right_lines << line if (UnchangedLine === line) || (AddLine === line)
       end
@@ -31,11 +31,18 @@ module RubyDiff
   
   class ChangedBlock < Block
     include LeftAndRightLines
+    def lines
+      self
+    end
   end
   
   class HunkBlock < Block
     include LeftAndRightLines
     
+    def lines
+      self[1..-1]
+    end
+
     def <<(line)
       return super(line) if HunkLine === line
       return super(line) if UnchangedLine === line
