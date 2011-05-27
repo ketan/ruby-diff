@@ -24,25 +24,14 @@ module RubyDiff
     
     def self.header(line); HeaderLine.new(line) end
     
-    def inspect
-      foo = (RightFileLine.name.size - self.class.name.size)
-      "#<#{self.class} #{" " * foo }:#{self.prefix}#{self}>"
-    end
-    
     def prefix
       ''
     end
   end
   
-  class AddLine < Line
-    def prefix; '+' end
-  end
-  class RemoveLine < Line
-    def prefix; '-' end
-  end
-  class UnchangedLine < Line
-    def prefix; ' ' end
-  end
+  class AddLine < Line ;end
+  class RemoveLine < Line; end
+  class UnchangedLine < Line; end
   class HeaderLine < Line; end
   class IndexLine < Line; end
   class LeftFileLine < Line; end
