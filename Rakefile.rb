@@ -9,15 +9,17 @@ task "gemspec" do
     s.name            = "ruby-diff"
     s.version         = RubyDiff::VERSION
     s.platform        = Gem::Platform::RUBY
+    s.required_ruby_version = Gem::Requirement.new(">= 1.8.7")
+    s.requirements    = ["none"]
     s.summary         = "ruby-diff renders unified diffs into various forms."
     
     s.description     = %Q{ruby-diff renders unified diffs into various forms. The output is based on a callback object that's passed into the renderer}
 
     s.files           = `git ls-files`.split("\n") + %w(ruby-diff.gemspec)
-    s.require_path    = 'lib'
     s.has_rdoc        = false
-    s.extra_rdoc_files = ['README.txt']
+    s.extra_rdoc_files = ['README.textile']
     s.test_files      = Dir['test/{test,spec}_*.rb']
+    s.require_paths = ["lib"]
     
     s.authors          = ['Ketan Padegaonkar']
     s.email           = ['KetanPadegaonkar@gmail.com']
@@ -32,7 +34,7 @@ task :gem => ["gemspec"] do
   rm_rf 'pkg'
   sh "gem build ruby-diff.gemspec"
   mkdir 'pkg'
-  mv "ruby-diff-#{Diff::Display::VERSION::STRING}.gem", "pkg"
+  mv "ruby-diff-#{RubyDiff::VERSION}.gem", "pkg"
 end
 
 task :test do
