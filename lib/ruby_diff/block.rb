@@ -5,6 +5,12 @@ module RubyDiff
   end
 
   class HunkBlock < Block
+
+    def left_offset; self.first.left_offset; end
+    def right_offset; self.first.right_offset end
+    def left_line_count; self.first.left_line_count end
+    def right_line_count; self.first.right_line_count; end
+    
     def left_lines
       return @left_lines if @left_lines
       parse_lines
