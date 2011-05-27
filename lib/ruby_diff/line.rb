@@ -13,7 +13,7 @@ module RubyDiff
     def self.diff_line(line)
       return AddLine.new(line[1..-1])             if line =~ /\+/
       return RemoveLine.new(line[1..-1])          if line =~ /\-/
-      return Line.new(line[1..-1])                if line =~ / /
+      return UnchangedLine.new(line[1..-1])       if line =~ / /
     end
     
     def self.header_line(line)

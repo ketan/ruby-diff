@@ -35,7 +35,7 @@ module RubyDiff
         return
       end
       
-      @data.last << Line.diff_line(line)
+      @data.last << UnchangedLine.diff_line(line)
       
     end
     

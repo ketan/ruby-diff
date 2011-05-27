@@ -5,10 +5,28 @@ module RubyDiff
   end
 
   class HunkBlock < Block
-    def <<(line)
-      super(line)
-    
+    def left_lines
+      return @left_lines if @left_lines
+      parse_lines
+      @left_lines
     end
+    
+    def right_lines
+      return @right_lines if @right_lines
+      parse_lines
+      @right_lines
+    end
+    
+    def parse_lines
+      hunk_line = self.first
+      @left_lines = []
+      @right_lines = []
+      self[1..-1].each do |line|
+        @left_lines << line  if (UnchangedLine === line) || (RemoveLine === line)
+        @right_lines << line if (UnchangedLine === line) || (AddLine === line)
+      end
+    end
+    
   end
 
   class HeaderBlock < Block

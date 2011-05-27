@@ -12,4 +12,25 @@ module RubyDiff
       assert_equal 'foo/right.txt', header.right_file_name
     end
   end
+  
+  class HunkBlockTest < Test::Unit::TestCase
+    def test_a_hunk_block
+      hunk = Block.hunk
+      hunk << Line.hunk_line("@@ -14,8 +12,6 @@")
+      hunk << Line.diff_line("     <td><%= user.name %></td>")
+      hunk << Line.diff_line("     <td><%= user.login %></td>")
+      hunk << Line.diff_line("     <td><%= link_to 'Show', user %></td>")
+      hunk << Line.diff_line("-    <td><%= link_to 'Edit', edit_user_path(user) %></td>")
+      hunk << Line.diff_line("-    <td><%= link_to 'Destroy', user, :confirm => 'Are you sure?', :method => :delete %></td>")
+      hunk << Line.diff_line("   </tr>")
+      hunk << Line.diff_line(" <% end %>")
+      hunk << Line.diff_line(" </table>")
+      
+      left_lines = hunk[1..-1]
+      right_lines = hunk[1..3] + hunk[6..-1]
+      
+      assert_equal left_lines, hunk.left_lines
+      assert_equal right_lines, hunk.right_lines
+    end
+  end
 end
